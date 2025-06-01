@@ -12,13 +12,15 @@ class History extends Model
     /** @use HasFactory<\Database\Factories\HistoryFactory> */
     use HasFactory;
 
+    protected $primaryKey = 'history_id';
+
     protected $fillable = [
         'user_id', 'ticket_id', 'flight_id', 'flight_date'
     ];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function ticket(): BelongsTo

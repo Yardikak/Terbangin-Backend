@@ -17,7 +17,10 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'ticket_id' => \App\Models\Ticket::factory(),
+            'amount' => $this->faker->numberBetween(500000, 5000000),
+            'payment_date' => $this->faker->dateTimeBetween('-1 week', 'now'),
+            'payment_status' => $this->faker->randomElement(['pending', 'completed', 'failed']),
         ];
     }
 }

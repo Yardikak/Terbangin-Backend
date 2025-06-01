@@ -17,7 +17,13 @@ class FlightFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'airline_name' => $this->faker->randomElement(['Garuda', 'Lion Air', 'AirAsia', 'Citilink', 'Batik Air']),
+            'flight_number' => strtoupper($this->faker->randomLetter.$this->faker->randomLetter).$this->faker->unique()->numberBetween(100, 999),
+            'departure' => $this->faker->dateTimeBetween('now', '+1 week'),
+            'arrival' => $this->faker->dateTimeBetween('+2 hours', '+1 week'),
+            'destination' => $this->faker->city.' ('.$this->faker->randomElement(['CGK', 'DPS', 'SUB', 'JFK', 'SIN']).')',
+            'price' => $this->faker->numberBetween(500000, 5000000),
+            'status' => $this->faker->randomElement(['scheduled', 'delayed', 'cancelled', 'completed']),
         ];
     }
 }

@@ -50,11 +50,11 @@ class User extends Authenticatable
 
         public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class, 'user_id');
     }
 
     public function histories(): HasMany
     {
-        return $this->hasMany(History::class);
+        return $this->hasMany(History::class, 'user_id');
     }
 }

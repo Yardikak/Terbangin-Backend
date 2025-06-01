@@ -11,7 +11,9 @@ class Payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
-    
+
+    protected $primaryKey = 'payment_id';
+
     protected $fillable = [
         'ticket_id', 'amount', 'payment_date', 'payment_status'
     ];

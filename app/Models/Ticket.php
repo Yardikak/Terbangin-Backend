@@ -12,13 +12,15 @@ class Ticket extends Model
     /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
+    protected $primaryKey = 'ticket_id';
+
     protected $fillable = [
         'user_id', 'flight_id', 'status', 'purchase_date', 'e_ticket',
     ];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function flight(): BelongsTo
