@@ -9,4 +9,8 @@ class Promo extends Model
 {
     /** @use HasFactory<\Database\Factories\PromoFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'promo_code', 'description', 'discount', 'valid_until'
+    ];
 }

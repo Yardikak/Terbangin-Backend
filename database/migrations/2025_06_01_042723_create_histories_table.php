@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('histories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        $table->id('history_id');
+        $table->foreignId('user_id')->constrained('users', 'user_id')->onDelete('cascade');
+        $table->foreignId('ticket_id')->constrained('tickets', 'ticket_id')->onDelete('cascade');
+        $table->foreignId('flight_id')->constrained('flights', 'flight_id')->onDelete('cascade');
+        $table->dateTime('flight_date');
+        $table->timestamps();
         });
     }
 
