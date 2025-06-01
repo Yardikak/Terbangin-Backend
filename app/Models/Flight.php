@@ -11,7 +11,7 @@ class Flight extends Model
 {
     /** @use HasFactory<\Database\Factories\FlightFactory> */
     use HasFactory;
-    
+    protected $primaryKey = 'flight_id';
     protected $fillable = [
         'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'price', 'status'
     ];
