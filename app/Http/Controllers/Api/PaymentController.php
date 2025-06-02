@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\Promo;
 
 class PaymentController extends Controller
 {
@@ -28,17 +29,27 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'ticket_id' => 'required|exists:tickets,ticket_id',
-            'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
-            'payment_status' => 'required|string|in:pending,completed,failed'
+            'quantity' => 'required|integer|min:1',
+            'payment_status' => 'required|string|in:pending,completed,failed',
+            'promo_code' => 'nullable|string'
         ]);
+
+        $ticket = \App\Models\Ticket::with('flight')->findOrFail($validated['ticket_id']);
+        $amount = $ticket->flight->price * $validated['quantity'];
+
+        $hasilKalkulasi = $this->kalkulasiHargaTiket($amount, $validated['promo_code'] ?? null);
+
+        $validated['total_price'] = $hasilKalkulasi['harga_akhir'];
+        $validated['promo_id'] = $hasilKalkulasi['promo'] ? $hasilKalkulasi['promo']->promo_id : null;
+        unset($validated['promo_code']);
 
         $payment = Payment::create($validated);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Payment created successfully',
-            'data' => $payment
+            'data' => $payment,
+            'kalkulasi' => $hasilKalkulasi
         ], 201);
     }
 
@@ -78,17 +89,34 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'ticket_id' => 'sometimes|required|exists:tickets,ticket_id',
-            'amount' => 'sometimes|required|numeric|min:0',
-            'payment_date' => 'sometimes|required|date',
-            'payment_status' => 'sometimes|required|string|in:pending,completed,failed'
+            'quantity' => 'sometimes|required|integer|min:1',
+            'payment_status' => 'sometimes|required|string|in:pending,completed,failed',
+            'promo_code' => 'nullable|string'
         ]);
+
+        if (isset($validated['ticket_id'])) {
+            $ticket = \App\Models\Ticket::with('flight')->findOrFail($validated['ticket_id']);
+        } else {
+            $ticket = $payment->ticket()->with('flight')->first();
+        }
+
+        $quantity = $validated['quantity'] ?? $payment->quantity;
+        $amount = $ticket->flight->price * $quantity; // harga awal (TIDAK disimpan di tabel)
+
+        $kodePromo = $validated['promo_code'] ?? ($payment->promo ? $payment->promo->promo_code : null);
+        $hasilKalkulasi = $this->kalkulasiHargaTiket($amount, $kodePromo);
+
+        $validated['total_price'] = $hasilKalkulasi['harga_akhir']; // harga akhir (DISIMPAN di tabel)
+        $validated['promo_id'] = $hasilKalkulasi['promo'] ? $hasilKalkulasi['promo']->promo_id : null;
+        unset($validated['promo_code']);
 
         $payment->update($validated);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Payment updated successfully',
-            'data' => $payment
+            'data' => $payment,
+            'kalkulasi' => $hasilKalkulasi
         ]);
     }
 
@@ -112,5 +140,29 @@ class PaymentController extends Controller
             'status' => 'success',
             'message' => 'Payment deleted successfully'
         ]);
+    }
+    private function kalkulasiHargaTiket(float $hargaTiket, ?string $kodePromo = null): array
+    {
+        $diskon = 0.0;
+        $promo = null;
+
+        if ($kodePromo) {
+            $promo = Promo::where('promo_code', $kodePromo)
+                ->where('valid_until', '>=', now())
+                ->first();
+
+            if ($promo) {
+                $diskon = $promo->discount / 100;
+            }
+        }
+
+        $hargaAkhir = $hargaTiket - ($hargaTiket * $diskon);
+
+        return [
+            'harga_awal' => $hargaTiket,
+            'harga_akhir' => $hargaAkhir,
+            'promo' => $promo,
+            'diskon' => $diskon * 100
+        ];
     }
 }

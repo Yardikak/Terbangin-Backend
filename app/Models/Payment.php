@@ -15,11 +15,16 @@ class Payment extends Model
     protected $primaryKey = 'payment_id';
 
     protected $fillable = [
-        'ticket_id', 'amount', 'payment_date', 'payment_status'
+        'ticket_id', 'quantity', 'total_price', 'promo_id', 'payment_status'
     ];
 
     public function ticket(): BelongsTo
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsTo(Ticket::class, 'ticket_id');
+    }
+
+    public function promo(): BelongsTo
+    {
+        return $this->belongsTo(Promo::class, 'promo_id');
     }
 }

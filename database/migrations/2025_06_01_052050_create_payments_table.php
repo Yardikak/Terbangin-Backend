@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
         $table->id('payment_id');
         $table->foreignId('ticket_id')->constrained('tickets', 'ticket_id')->onDelete('cascade');
-        $table->decimal('amount', 10, 2);
-        $table->dateTime('payment_date');
+        $table->foreignId('promo_id')->nullable()->constrained('promos', 'promo_id')->onDelete('set null');
+        $table->integer('quantity')->default(1);
+        $table->decimal('total_price', 15, 2);
         $table->string('payment_status');
         $table->timestamps();
-            });
+        });
     }
 
     /**

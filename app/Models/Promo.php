@@ -15,4 +15,9 @@ class Promo extends Model
     protected $fillable = [
         'promo_code', 'description', 'discount', 'valid_until'
     ];
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'promo_id');
+    }
 }

@@ -17,7 +17,6 @@ class TicketFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => \App\Models\User::factory(),
             'flight_id' => \App\Models\Flight::factory(),
             'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled']),
             'purchase_date' => $this->faker->dateTimeBetween('-1 week', 'now'),

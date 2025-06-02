@@ -19,7 +19,7 @@ class PromoFactory extends Factory
         return [
             'promo_code' => strtoupper($this->faker->word).$this->faker->numberBetween(10, 99),
             'description' => $this->faker->sentence,
-            'discount' => $this->faker->randomFloat(2, 5, 50),
+            'discount' => $this->faker->numberBetween(10, 100),
             'valid_until' => $this->faker->dateTimeBetween('now', '+6 months'),
         ];
     }

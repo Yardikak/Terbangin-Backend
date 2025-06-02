@@ -15,7 +15,7 @@ class History extends Model
     protected $primaryKey = 'history_id';
 
     protected $fillable = [
-        'user_id', 'ticket_id', 'flight_id', 'flight_date'
+        'user_id', 'ticket_id', 'payment_id', 'flight_date'
     ];
 
     public function user(): BelongsTo
@@ -25,11 +25,11 @@ class History extends Model
 
     public function ticket(): BelongsTo
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
-    public function flight(): BelongsTo
+    public function payment(): BelongsTo
     {
-        return $this->belongsTo(Flight::class);
+        return $this->belongsTo(Payment::class, 'payment_id');
     }
 }

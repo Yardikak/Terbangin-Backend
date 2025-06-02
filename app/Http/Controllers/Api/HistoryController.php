@@ -13,7 +13,7 @@ class HistoryController extends Controller
      */
     public function index()
     {
-        $histories = History::with(['user', 'ticket', 'flight'])->get();
+        $histories = History::with(['user', 'ticket', 'payment'])->get();
 
         return response()->json([
             'status' => 'success',
@@ -29,7 +29,7 @@ class HistoryController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'ticket_id' => 'required|exists:tickets,ticket_id',
-            'flight_id' => 'required|exists:flights,flight_id',
+            'payment_id' => 'required|exists:payments,payment_id',
             'flight_date' => 'required|date'
         ]);
 
@@ -38,7 +38,7 @@ class HistoryController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'History created successfully',
-            'data' => $history->load(['user', 'ticket', 'flight'])
+            'data' => $history->load(['user', 'ticket', 'payment'])
         ], 201);
     }
 
@@ -47,7 +47,7 @@ class HistoryController extends Controller
      */
     public function show(string $id)
     {
-        $history = History::with(['user', 'ticket', 'flight'])->find($id);
+        $history = History::with(['user', 'ticket', 'payment'])->find($id);
 
         if (!$history) {
             return response()->json([
@@ -79,7 +79,7 @@ class HistoryController extends Controller
         $validated = $request->validate([
             'user_id' => 'sometimes|required|exists:users,id',
             'ticket_id' => 'sometimes|required|exists:tickets,ticket_id',
-            'flight_id' => 'sometimes|required|exists:flights,flight_id',
+            'payment_id' => 'sometimes|required|exists:payments,payment_id',
             'flight_date' => 'sometimes|required|date'
         ]);
 
@@ -88,7 +88,7 @@ class HistoryController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'History updated successfully',
-            'data' => $history->load(['user', 'ticket', 'flight'])
+            'data' => $history->load(['user', 'ticket', 'payment'])
         ]);
     }
 

@@ -13,13 +13,6 @@ class PaymentSeeder extends Seeder
      */
     public function run(): void
     {
-        Payment::create([
-            'ticket_id' => 1,
-            'amount' => 1350000.00,
-            'payment_date' => now(),
-            'payment_status' => 'completed',
-        ]);
-
         Payment::factory(10)->create();
     }
 }

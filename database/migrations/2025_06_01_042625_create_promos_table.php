@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id('promo_id');
         $table->string('promo_code');
         $table->text('description')->nullable();
-        $table->decimal('discount', 8, 2);
+        $table->integer('discount');
         $table->dateTime('valid_until');
         $table->timestamps();
         });

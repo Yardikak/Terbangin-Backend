@@ -19,7 +19,7 @@ class HistoryFactory extends Factory
         return [
             'user_id' => \App\Models\User::factory(),
             'ticket_id' => \App\Models\Ticket::factory(),
-            'flight_id' => \App\Models\Flight::factory(),
+            'payment_id' => \App\Models\Payment::factory(),
             'flight_date' => $this->faker->dateTimeBetween('now', '+1 month'),
         ];
     }

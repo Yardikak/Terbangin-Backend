@@ -14,14 +14,13 @@ class Flight extends Model
     
     protected $primaryKey = 'flight_id';
     
-    protected $primaryKey = 'flight_id';
     protected $fillable = [
         'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'price', 'status'
     ];
 
     public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class, 'flight_id');
     }
 
     public function histories(): HasMany

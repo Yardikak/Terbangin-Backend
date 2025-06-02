@@ -14,7 +14,7 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::select('ticket_id', 'user_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->get();
+        $tickets = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->get();
 
         return response()->json([
             'status' => 'success',
@@ -28,7 +28,6 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'flight_id' => 'required|exists:flights,flight_id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
@@ -42,7 +41,6 @@ class TicketController extends Controller
             'message' => 'Ticket created successfully',
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
-                'user_id' => $ticket->user_id,
                 'flight_id' => $ticket->flight_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
@@ -56,7 +54,7 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-                $ticket = Ticket::select('ticket_id', 'user_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->find($id);
+                $ticket = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->find($id);
 
         if (!$ticket) {
             return response()->json([
@@ -86,7 +84,6 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,id',
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
@@ -100,7 +97,6 @@ class TicketController extends Controller
             'message' => 'Ticket updated successfully',
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
-                'user_id' => $ticket->user_id,
                 'flight_id' => $ticket->flight_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
