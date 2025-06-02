@@ -18,6 +18,9 @@ return new class extends Migration
         $table->integer('quantity')->default(1);
         $table->decimal('total_price', 15, 2);
         $table->string('payment_status');
+        $table->string('midtrans_order_id')->nullable();
+        $table->string('midtrans_snap_token')->nullable();
+        $table->string('payment_url')->nullable();
         $table->timestamps();
         });
     }

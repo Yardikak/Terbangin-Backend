@@ -6,9 +6,19 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Payment;
 use App\Models\Promo;
+use App\Services\MidtransService;
+use Midtrans\Notification;
+use Midtrans\Transaction;
 
 class PaymentController extends Controller
 {
+    protected $midtrans;
+
+    public function __construct()
+    {
+        $this->midtrans = new MidtransService();
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -45,12 +55,52 @@ class PaymentController extends Controller
 
         $payment = Payment::create($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Payment created successfully',
-            'data' => $payment,
-            'kalkulasi' => $hasilKalkulasi
-        ], 201);
+        $transactionDetails = [
+            'order_id' => 'PAY-' . $payment->payment_id . '-' . time(),
+            'gross_amount' => (int) round($hasilKalkulasi['harga_akhir']),
+        ];
+
+        $user = auth()->user();
+
+        $customerDetails = [
+            'first_name' => $user ? $user->name : 'Guest',
+            'email' => $user ? $user->email : 'guest@example.com',
+        ];
+
+        $params = [
+            'transaction_details' => $transactionDetails,
+            'customer_details' => $customerDetails,
+            'callbacks' => [
+                'finish' => config('app.url') . '/payment/finish',
+                'error' => config('app.url') . '/payment/error',
+                'pending' => config('app.url') . '/payment/pending'
+            ]
+        ];
+
+        try {
+            $snapToken = $this->midtrans->createTransaction($params);
+
+            $payment->update([
+                'midtrans_order_id' => $transactionDetails['order_id'],
+                'midtrans_snap_token' => $snapToken->token,
+                'payment_url' => $snapToken->redirect_url,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment created successfully',
+                'data' => $payment,
+                'payment_url' => $snapToken->redirect_url,
+                'kalkulasi' => $hasilKalkulasi
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create payment transaction',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -58,7 +108,7 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-            $payment = Payment::with('ticket')->find($id);
+            $payment = Payment::with(['ticket'])->find($id);
 
         if (!$payment) {
             return response()->json([
@@ -101,12 +151,11 @@ class PaymentController extends Controller
         }
 
         $quantity = $validated['quantity'] ?? $payment->quantity;
-        $amount = $ticket->flight->price * $quantity; // harga awal (TIDAK disimpan di tabel)
-
+        $amount = $ticket->flight->price * $quantity;
         $kodePromo = $validated['promo_code'] ?? ($payment->promo ? $payment->promo->promo_code : null);
         $hasilKalkulasi = $this->kalkulasiHargaTiket($amount, $kodePromo);
 
-        $validated['total_price'] = $hasilKalkulasi['harga_akhir']; // harga akhir (DISIMPAN di tabel)
+        $validated['total_price'] = $hasilKalkulasi['harga_akhir'];
         $validated['promo_id'] = $hasilKalkulasi['promo'] ? $hasilKalkulasi['promo']->promo_id : null;
         unset($validated['promo_code']);
 
@@ -164,5 +213,55 @@ class PaymentController extends Controller
             'promo' => $promo,
             'diskon' => $diskon * 100
         ];
+    }
+
+    // Tambahkan method berikut untuk menerima notifikasi/callback dari Midtrans
+    public function handleNotification(Request $request)
+    {
+        $payload = $request->all();
+
+        try {
+            $notif = new Notification();
+            
+            $transaction = $notif->transaction_status;
+            $orderId = $notif->order_id;
+            $fraud = $notif->fraud_status;
+
+            $payment = Payment::where('midtrans_order_id', $orderId)->firstOrFail();
+
+            if ($transaction == 'capture') {
+                if ($fraud == 'challenge') {
+                    $payment->update(['payment_status' => 'pending']);
+                } else if ($fraud == 'accept') {
+                    $payment->update(['payment_status' => 'completed']);
+                }
+            } else if ($transaction == 'settlement') {
+                $payment->update(['payment_status' => 'completed']);
+            } else if ($transaction == 'pending') {
+                $payment->update(['payment_status' => 'pending']);
+            } else if ($transaction == 'deny' || $transaction == 'expire' || $transaction == 'cancel') {
+                $payment->update(['payment_status' => 'failed']);
+            }
+
+            return response()->json(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function paymentFinish(Request $request)
+    {
+        return view('payment.finish');
+    }
+
+    public function paymentError(Request $request)
+    {
+        return view('payment.error');
+    }
+
+    public function paymentPending(Request $request)
+    {
+        return view('payment.pending');
     }
 }

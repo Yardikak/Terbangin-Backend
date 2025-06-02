@@ -36,7 +36,10 @@ Route::apiResource('tickets', TicketController::class);
 Route::apiResource('flights', FlightController::class);
 Route::apiResource('payments', PaymentController::class);
 Route::apiResource('histories', HistoryController::class);
-
+Route::post('/payments/notification', [PaymentController::class, 'handleNotification']);
+Route::get('/payment/finish', [PaymentController::class, 'paymentFinish']);
+Route::get('/payment/error', [PaymentController::class, 'paymentError']);
+Route::get('/payment/pending', [PaymentController::class, 'paymentPending']);
 
 
 

@@ -15,7 +15,14 @@ class Payment extends Model
     protected $primaryKey = 'payment_id';
 
     protected $fillable = [
-        'ticket_id', 'quantity', 'total_price', 'promo_id', 'payment_status'
+        'ticket_id', 
+        'quantity', 
+        'payment_status', 
+        'promo_id',
+        'total_price',
+        'midtrans_order_id',
+        'midtrans_snap_token',
+        'payment_url'
     ];
 
     public function ticket(): BelongsTo
