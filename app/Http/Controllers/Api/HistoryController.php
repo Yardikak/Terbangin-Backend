@@ -27,7 +27,7 @@ class HistoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,user_id',
+            'user_id' => 'required|exists:users,id',
             'ticket_id' => 'required|exists:tickets,ticket_id',
             'flight_id' => 'required|exists:flights,flight_id',
             'flight_date' => 'required|date'
@@ -77,7 +77,7 @@ class HistoryController extends Controller
         }
 
         $validated = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,user_id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'ticket_id' => 'sometimes|required|exists:tickets,ticket_id',
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
             'flight_date' => 'sometimes|required|date'
