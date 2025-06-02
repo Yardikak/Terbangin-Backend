@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\KNNController;
 Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -32,7 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     
+    Route::get('/flights/search', [FlightController::class, 'search']);
     Route::apiResource('flights', FlightController::class);
+
     Route::apiResource('payments', PaymentController::class);
     Route::apiResource('histories', HistoryController::class);
     

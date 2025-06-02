@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Flight;
-
+use Carbon\Carbon;
 class FlightController extends Controller
 {
     /**
@@ -164,41 +164,30 @@ class FlightController extends Controller
 
     public function search(Request $request)
     {
-        $query = Flight::query();
+    $query = Flight::query();
+    // Filter by 'from' (exact match)
 
-        if ($request->has('airline_name')) {
-            $query->where('airline_name', 'like', '%' . $request->input('airline_name') . '%');
-        }
+    if ($request->json('from')!= null) {
+        $query->where('from', $request->json('from'));
+    }
 
-        if ($request->has('departure')) {
-            $query->whereDate('departure', $request->input('departure'));
-        }
+    // Filter by 'destination' (exact match)
+    if ($request->json('destination')!=null) {
+        $query->where('destination', $request->json('destination'));
+    }
+    if ($request->json('departure') != null) {
+        // Use whereDate to compare only the date part
+        $query->whereDate('departure', $request->json('departure'));
+    }
 
-        if ($request->has('arrival')) {
-            $query->whereDate('arrival', $request->input('arrival'));
-        }
+    
+    $flights = $query->get();
 
-        if ($request->has('destination')) {
-            $query->where('destination', 'like', '%' . $request->input('destination') . '%');
-        }
-
-        if ($request->has('from')) {
-            $query->where('from', 'like', '%' . $request->input('from') . '%');
-        }
-
-        if ($request->has('price_min')) {
-            $query->where('price', '>=', $request->input('price_min'));
-        }
-
-        if ($request->has('price_max')) {
-            $query->where('price', '<=', $request->input('price_max'));
-        }
-
-        $flights = $query->get();
-
-        return response()->json([
+    return response()->json([
             'status' => 'success',
             'data' => $flights
-        ]);
+    ]);
+    // Debug the query before execution
+    \Log::info('Generated SQL: ' . $query->toSql());
     }
 }
