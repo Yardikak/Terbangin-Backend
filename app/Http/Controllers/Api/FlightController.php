@@ -161,4 +161,44 @@ class FlightController extends Controller
             'message' => 'Flight deleted successfully'
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $query = Flight::query();
+
+        if ($request->has('airline_name')) {
+            $query->where('airline_name', 'like', '%' . $request->input('airline_name') . '%');
+        }
+
+        if ($request->has('departure')) {
+            $query->whereDate('departure', $request->input('departure'));
+        }
+
+        if ($request->has('arrival')) {
+            $query->whereDate('arrival', $request->input('arrival'));
+        }
+
+        if ($request->has('destination')) {
+            $query->where('destination', 'like', '%' . $request->input('destination') . '%');
+        }
+
+        if ($request->has('from')) {
+            $query->where('from', 'like', '%' . $request->input('from') . '%');
+        }
+
+        if ($request->has('price_min')) {
+            $query->where('price', '>=', $request->input('price_min'));
+        }
+
+        if ($request->has('price_max')) {
+            $query->where('price', '<=', $request->input('price_max'));
+        }
+
+        $flights = $query->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $flights
+        ]);
+    }
 }
