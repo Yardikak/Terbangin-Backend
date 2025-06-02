@@ -22,6 +22,7 @@ class FlightFactory extends Factory
             'departure' => $this->faker->dateTimeBetween('now', '+1 week'),
             'arrival' => $this->faker->dateTimeBetween('+2 hours', '+1 week'),
             'destination' => $this->faker->city.' ('.$this->faker->randomElement(['CGK', 'DPS', 'SUB', 'JFK', 'SIN']).')',
+            'from' => $this->faker->city.' ('.$this->faker->randomElement(['CGK', 'DPS', 'SUB', 'JFK', 'SIN']).')',
             'price' => $this->faker->numberBetween(500000, 5000000),
             'status' => $this->faker->randomElement(['scheduled', 'delayed', 'cancelled', 'completed']),
         ];

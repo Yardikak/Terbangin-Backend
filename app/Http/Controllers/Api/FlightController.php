@@ -20,6 +20,7 @@ class FlightController extends Controller
             'departure',
             'arrival',
             'destination',
+            'from',
             'price',
             'status'
         )->get();
@@ -41,6 +42,7 @@ class FlightController extends Controller
             'departure' => 'required|date',
             'arrival' => 'required|date|after:departure',
             'destination' => 'required|string|max:255',
+            'from' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'status' => 'required|string|max:100',
         ]);
@@ -57,6 +59,7 @@ class FlightController extends Controller
                 'departure' => $flight->departure,
                 'arrival' => $flight->arrival,
                 'destination' => $flight->destination,
+                'from' => $flight->from,
                 'price' => $flight->price,
                 'status' => $flight->status,
             ]
@@ -75,6 +78,7 @@ class FlightController extends Controller
             'departure',
             'arrival',
             'destination',
+            'from',
             'price',
             'status'
         )->find($id);
@@ -112,6 +116,7 @@ class FlightController extends Controller
             'departure' => 'sometimes|required|date',
             'arrival' => 'sometimes|required|date|after:departure',
             'destination' => 'sometimes|required|string|max:255',
+            'from' => 'sometimes|required|string|max:255',
             'price' => 'sometimes|required|numeric|min:0',
             'status' => 'sometimes|required|string|max:100',
         ]);
@@ -128,6 +133,7 @@ class FlightController extends Controller
                 'departure' => $flight->departure,
                 'arrival' => $flight->arrival,
                 'destination' => $flight->destination,
+                'from' => $flight->from,
                 'price' => $flight->price,
                 'status' => $flight->status,
             ]

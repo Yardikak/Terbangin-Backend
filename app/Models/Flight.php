@@ -15,7 +15,7 @@ class Flight extends Model
     protected $primaryKey = 'flight_id';
     
     protected $fillable = [
-        'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'price', 'status'
+        'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'from', 'price', 'status'
     ];
 
     public function tickets(): HasMany

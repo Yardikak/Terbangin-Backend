@@ -17,6 +17,7 @@ return new class extends Migration
         $table->string('flight_number');
         $table->dateTime('departure');
         $table->dateTime('arrival');
+        $table->string('from');
         $table->string('destination');
         $table->decimal('price', 10, 2);
         $table->string('status');
