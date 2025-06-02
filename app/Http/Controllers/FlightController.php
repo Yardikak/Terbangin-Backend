@@ -13,7 +13,7 @@ class FlightController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
