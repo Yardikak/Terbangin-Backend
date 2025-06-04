@@ -25,7 +25,6 @@ use App\Http\Controllers\Api\KNNController;
 Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -43,6 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/finish', [PaymentController::class, 'paymentFinish']);
     Route::get('/payment/error', [PaymentController::class, 'paymentError']);
     Route::get('/payment/pending', [PaymentController::class, 'paymentPending']);
+    
+    Route::get('/tickets/user/{user_id}', [TicketController::class, 'getTicketsByUser']);
 });
 
 Route::apiResource('promos', PromoController::class);

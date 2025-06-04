@@ -126,4 +126,22 @@ class TicketController extends Controller
             'message' => 'Ticket deleted successfully'
         ]);
     }
+    public function getTicketsByUser(String $user_id)
+    {
+        $tickets = Ticket::where('user_id', $user_id)
+            ->select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')
+            ->get();
+
+        if ($tickets->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tickets found for this user'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $tickets
+        ]);
+    }
 }
