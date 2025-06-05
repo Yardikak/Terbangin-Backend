@@ -126,4 +126,33 @@ class PromoController extends Controller
             'message' => 'Promo deleted successfully'
         ]);
     }
+    public function search(Request $request)
+    {
+        $searchTerm = $request->json('promo_code');
+
+        if (!$searchTerm) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Promo code is required'
+            ], 400);
+        }
+
+        $promos = Promo::select('promo_id', 'promo_code', 'description', 'discount', 'valid_until')
+            ->where('promo_code', '=', $searchTerm)
+            ->get();
+
+        if ($promos->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No promos found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            
+            'data' => $promos
+        ]);
+    }
+
 }
