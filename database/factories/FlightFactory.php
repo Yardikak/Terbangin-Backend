@@ -16,14 +16,45 @@ class FlightFactory extends Factory
      */
     public function definition(): array
     {
+        $indonesianCities = [
+            'Jakarta' => 'CGK',
+            'Denpasar' => 'DPS',
+            'Surabaya' => 'SUB',
+            'Yogyakarta' => 'JOG',
+            'Bandung' => 'BDO',
+            'Medan' => 'KNO',
+            'Makassar' => 'UPG',
+        ];
+
+        $weightedCities = array_merge(
+            array_fill(0, 30, 'Jakarta'),      // 30%
+            array_fill(0, 20, 'Denpasar'),    // 20%
+            array_fill(0, 10, 'Surabaya'),    // 10%
+            array_fill(0, 15, 'Yogyakarta'),  // 15%
+            array_fill(0, 10, 'Bandung'),     // 10%
+            array_fill(0, 5, 'Medan'),        // 5%
+            array_fill(0, 10, 'Makassar')     // 10%
+        );
+
+        $fromCity = $this->faker->randomElement($weightedCities);
+        $fromAirportCode = $indonesianCities[$fromCity];
+
+        $destinationCity = $this->faker->randomElement($weightedCities);
+        while ($destinationCity === $fromCity) {
+            $destinationCity = $this->faker->randomElement($weightedCities);
+        }
+        $destinationAirportCode = $indonesianCities[$destinationCity];
+
+        $departureTime = $this->faker->dateTimeBetween('now', '+3 days');
+        $arrivalTime = (clone $departureTime)->modify('+2 hours');
+
         return [
-            'airline_name' => $this->faker->randomElement(['Garuda', 'Lion Air', 'AirAsia', 'Citilink', 'Batik Air']),
-            'flight_number' => strtoupper($this->faker->randomLetter.$this->faker->randomLetter).$this->faker->unique()->numberBetween(100, 999),
-            'departure' => $this->faker->dateTimeBetween('now', '+1 week'),
-            'arrival' => $this->faker->dateTimeBetween('+2 hours', '+1 week'),
-            'destination' => $this->faker->city.' ('.$this->faker->randomElement(['CGK', 'DPS', 'SUB', 'JFK', 'SIN']).')',
-            'from' => $this->faker->city.' ('.$this->faker->randomElement(['CGK', 'DPS', 'SUB', 'JFK', 'SIN']).')',
-            'total_seats' => $this->faker->numberBetween(10, 80),
+            'airline_name' => $this->faker->randomElement(['Garuda Indonesia', 'Lion Air', 'AirAsia', 'Citilink']),
+            'flight_number' => strtoupper($this->faker->randomLetter() . $this->faker->randomLetter() . $this->faker->unique()->numberBetween(100, 999)),
+            'departure' => $departureTime,
+            'arrival' => $arrivalTime,
+            'from' => "$fromCity ($fromAirportCode)",
+            'destination' => "$destinationCity ($destinationAirportCode)",
             'status' => $this->faker->randomElement(['scheduled', 'delayed', 'cancelled', 'completed']),
         ];
     }

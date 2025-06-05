@@ -214,7 +214,7 @@ class FlightController extends Controller
             ], 404);
         }
 
-        return response()->json([
+    return response()->json([
             'status' => 'success',
             'data' => $flights,
             'meta' => [

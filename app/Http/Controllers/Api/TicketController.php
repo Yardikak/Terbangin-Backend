@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 
-
 class TicketController extends Controller
 {
     /**
@@ -121,6 +120,28 @@ class TicketController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Ticket deleted successfully'
+        ]);
+    }
+
+    /**
+     * Get tickets by user ID.
+     */
+    public function getTicketsByUser(string $user_id)
+    {
+        $tickets = Ticket::where('user_id', $user_id)
+            ->select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')
+            ->get();
+
+        if ($tickets->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tickets found for this user'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $tickets
         ]);
     }
 }
