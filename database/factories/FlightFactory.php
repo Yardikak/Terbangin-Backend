@@ -54,7 +54,7 @@ class FlightFactory extends Factory
     $arrivalTime = (clone $departureTime)->modify('+2 hours');
 
     return [
-        'airline_name' => $this->faker->randomElement(['Garuda Indonesia', 'Lion Air', 'AirAsia', 'Citilink', 'Batik Air']),
+        'airline_name' => $this->faker->randomElement(['Garuda Indonesia', 'Lion Air', 'AirAsia', 'Citilink']),
         'flight_number' => strtoupper($this->faker->randomLetter() . $this->faker->randomLetter() . $this->faker->unique()->numberBetween(100, 999)),
         'departure' => $departureTime,
         'arrival' => $arrivalTime,
