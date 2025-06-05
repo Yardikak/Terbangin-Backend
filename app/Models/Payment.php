@@ -6,16 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class Payment extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
 
     protected $primaryKey = 'payment_id';
 
     protected $fillable = [
+        'user_id',
         'ticket_id', 
+        'flight_class_id',
         'quantity', 
         'payment_status', 
         'promo_id',
@@ -25,9 +25,24 @@ class Payment extends Model
         'payment_url'
     ];
 
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'quantity' => 'integer'
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function ticket(): BelongsTo
     {
         return $this->belongsTo(Ticket::class, 'ticket_id');
+    }
+
+    public function flightClass(): BelongsTo
+    {
+        return $this->belongsTo(FlightClass::class, 'flight_class_id');
     }
 
     public function promo(): BelongsTo

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Flight;
+use Illuminate\Support\Facades\Log;
 
 class FlightController extends Controller
 {
@@ -21,8 +22,8 @@ class FlightController extends Controller
             'arrival',
             'destination',
             'from',
-            'price',
-            'status'
+            'status',
+            'total_seats'
         )->get();
 
         return response()->json([
@@ -43,8 +44,8 @@ class FlightController extends Controller
             'arrival' => 'required|date|after:departure',
             'destination' => 'required|string|max:255',
             'from' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
             'status' => 'required|string|max:100',
+            'total_seats' => 'required|integer|min:10',
         ]);
 
         $flight = Flight::create($validated);
@@ -52,17 +53,7 @@ class FlightController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Flight created successfully',
-            'data' => [
-                'flight_id' => $flight->flight_id,
-                'airline_name' => $flight->airline_name,
-                'flight_number' => $flight->flight_number,
-                'departure' => $flight->departure,
-                'arrival' => $flight->arrival,
-                'destination' => $flight->destination,
-                'from' => $flight->from,
-                'price' => $flight->price,
-                'status' => $flight->status,
-            ]
+            'data' => $flight
         ], 201);
     }
 
@@ -79,8 +70,8 @@ class FlightController extends Controller
             'arrival',
             'destination',
             'from',
-            'price',
-            'status'
+            'status',
+            'total_seats'
         )->find($id);
 
         if (!$flight) {
@@ -117,8 +108,8 @@ class FlightController extends Controller
             'arrival' => 'sometimes|required|date|after:departure',
             'destination' => 'sometimes|required|string|max:255',
             'from' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|numeric|min:0',
             'status' => 'sometimes|required|string|max:100',
+            'total_seats' => 'sometimes|required|integer|min:10',
         ]);
 
         $flight->update($validated);
@@ -126,17 +117,17 @@ class FlightController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Flight updated successfully',
-            'data' => [
-                'flight_id' => $flight->flight_id,
-                'airline_name' => $flight->airline_name,
-                'flight_number' => $flight->flight_number,
-                'departure' => $flight->departure,
-                'arrival' => $flight->arrival,
-                'destination' => $flight->destination,
-                'from' => $flight->from,
-                'price' => $flight->price,
-                'status' => $flight->status,
-            ]
+            'data' => $flight->only([
+                'flight_id',
+                'airline_name',
+                'flight_number',
+                'departure',
+                'arrival',
+                'from',
+                'destination',
+                'status',
+                'total_seats'
+            ])
         ]);
     }
 
@@ -164,41 +155,72 @@ class FlightController extends Controller
 
     public function search(Request $request)
     {
+        Log::debug('SEARCH REQUEST', [
+            'params' => $request->all(),
+            'headers' => $request->headers->all()
+        ]);
+
+        $testQuery = Flight::whereRaw('LOWER(airline_name) LIKE ?', ['%cit%'])->count();
+        Log::debug('TEST QUERY COUNT', ['count' => $testQuery]);
+
         $query = Flight::query();
+        $appliedFilters = [];
 
-        if ($request->has('airline_name')) {
-            $query->where('airline_name', 'like', '%' . $request->input('airline_name') . '%');
+        if ($request->filled('airline_name')) {
+            $value = strtolower($request->airline_name);
+            $query->whereRaw('LOWER(airline_name) LIKE ?', ["%{$value}%"]);
+            $appliedFilters['airline_name'] = $value;
+            Log::debug('AIRLINE FILTER APPLIED', ['value' => $value]);
         }
 
-        if ($request->has('departure')) {
-            $query->whereDate('departure', $request->input('departure'));
+        if ($request->filled('destination')) {
+            $value = strtolower($request->destination);
+            $query->whereRaw('LOWER(destination) LIKE ?', ["%{$value}%"]);
+            $appliedFilters['destination'] = $value;
         }
 
-        if ($request->has('arrival')) {
-            $query->whereDate('arrival', $request->input('arrival'));
+        if ($request->filled('from')) {
+            $value = strtolower($request->from);
+            $query->whereRaw('LOWER(`from`) LIKE ?', ["%{$value}%"]);
+            $appliedFilters['from'] = $value;
         }
 
-        if ($request->has('destination')) {
-            $query->where('destination', 'like', '%' . $request->input('destination') . '%');
-        }
-
-        if ($request->has('from')) {
-            $query->where('from', 'like', '%' . $request->input('from') . '%');
-        }
-
-        if ($request->has('price_min')) {
-            $query->where('price', '>=', $request->input('price_min'));
-        }
-
-        if ($request->has('price_max')) {
-            $query->where('price', '<=', $request->input('price_max'));
-        }
+        Log::debug('FINAL QUERY', [
+            'sql' => $query->toSql(),
+            'bindings' => $query->getBindings()
+        ]);
 
         $flights = $query->get();
 
+        Log::debug('SEARCH RESULTS', [
+            'count' => $flights->count(),
+            'first' => $flights->first()
+        ]);
+
+        if ($flights->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Flight not found',
+                'debug' => [
+                    'applied_filters' => $appliedFilters,
+                    'test_query_count' => $testQuery,
+                    'suggestion' => 'Try with these sample searches:',
+                    'examples' => [
+                        'airline_name=cit',
+                        'from=west',
+                        'destination=port'
+                    ]
+                ]
+            ], 404);
+        }
+
         return response()->json([
             'status' => 'success',
-            'data' => $flights
+            'data' => $flights,
+            'meta' => [
+                'total' => $flights->count(),
+                'filters_applied' => $appliedFilters
+            ]
         ]);
     }
 }

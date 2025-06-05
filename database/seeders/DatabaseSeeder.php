@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PromoSeeder::class,
             FlightSeeder::class,
+            FlightClassSeeder::class,
             TicketSeeder::class,
             PaymentSeeder::class,
             HistorySeeder::class,
