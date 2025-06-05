@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 
-
 class TicketController extends Controller
 {
     /**
@@ -14,7 +13,7 @@ class TicketController extends Controller
      */
     public function index()
     {
-        $tickets = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->get();
+        $tickets = Ticket::select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')->get();
 
         return response()->json([
             'status' => 'success',
@@ -29,6 +28,7 @@ class TicketController extends Controller
     {
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,flight_id',
+            'user_id' => 'required|exists:users,user_id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
             'e_ticket' => 'required|string|max:255',
@@ -42,6 +42,7 @@ class TicketController extends Controller
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -54,7 +55,7 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-                $ticket = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->find($id);
+        $ticket = Ticket::select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')->find($id);
 
         if (!$ticket) {
             return response()->json([
@@ -85,6 +86,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
+            'user_id' => 'sometimes|required|exists:users,user_id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
             'e_ticket' => 'sometimes|required|string|max:255',
@@ -98,6 +100,7 @@ class TicketController extends Controller
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -126,7 +129,11 @@ class TicketController extends Controller
             'message' => 'Ticket deleted successfully'
         ]);
     }
-    public function getTicketsByUser(String $user_id)
+
+    /**
+     * Get tickets by user ID.
+     */
+    public function getTicketsByUser(string $user_id)
     {
         $tickets = Ticket::where('user_id', $user_id)
             ->select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')
