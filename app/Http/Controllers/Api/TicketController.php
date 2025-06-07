@@ -12,14 +12,15 @@ class TicketController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $tickets = Ticket::select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')->get();
+{
+    $tickets = Ticket::with('flight')->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $tickets
-        ]);
-    }
+    return response()->json([
+        'status' => 'success',
+        'data' => $tickets
+    ]);
+}
+
 
     /**
      * Store a newly created resource in storage.
@@ -54,21 +55,22 @@ class TicketController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        $ticket = Ticket::select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')->find($id);
+{
+    $ticket = Ticket::with('flight')->find($id);
 
-        if (!$ticket) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Ticket not found'
-            ], 404);
-        }
-
+    if (!$ticket) {
         return response()->json([
-            'status' => 'success',
-            'data' => $ticket
-        ]);
+            'status' => 'error',
+            'message' => 'Ticket not found'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $ticket
+    ]);
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -134,21 +136,22 @@ class TicketController extends Controller
      * Get tickets by user ID.
      */
     public function getTicketsByUser(string $user_id)
-    {
-        $tickets = Ticket::where('user_id', $user_id)
-            ->select('ticket_id', 'flight_id', 'user_id', 'status', 'purchase_date', 'e_ticket')
-            ->get();
+{
+    $tickets = Ticket::with('flight')
+        ->where('user_id', $user_id)
+        ->get();
 
-        if ($tickets->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No tickets found for this user'
-            ], 404);
-        }
-
+    if ($tickets->isEmpty()) {
         return response()->json([
-            'status' => 'success',
-            'data' => $tickets
-        ]);
+            'status' => 'error',
+            'message' => 'No tickets found for this user'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $tickets
+    ]);
+}
+
 }
