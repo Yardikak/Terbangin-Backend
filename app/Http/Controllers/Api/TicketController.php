@@ -29,7 +29,7 @@ class TicketController extends Controller
     {
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,flight_id',
-            'user_id' => 'required|exists:users,user_id',
+            'user_id' => 'required|exists:users,id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
             'e_ticket' => 'required|string|max:255',
@@ -88,7 +88,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
-            'user_id' => 'sometimes|required|exists:users,user_id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
             'e_ticket' => 'sometimes|required|string|max:255',
