@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('flights', function (Blueprint $table) {
-        $table->id('flight_id');
-        $table->string('airline_name');
-        $table->string('flight_number');
-        $table->dateTime('departure');
-        $table->dateTime('arrival');
-        $table->string('from');
-        $table->string('destination');
-        $table->decimal('price', 10, 2);
-        $table->string('status');
-        $table->timestamps();
+            $table->id('flight_id');
+            $table->string('airline_name');
+            $table->string('flight_number');
+            $table->dateTime('departure');
+            $table->dateTime('arrival');
+            $table->string('from');
+            $table->string('destination');
+            $table->string('status');
+            $table->integer('total_seats')->default(10);
+            $table->timestamps();
         });
     }
 

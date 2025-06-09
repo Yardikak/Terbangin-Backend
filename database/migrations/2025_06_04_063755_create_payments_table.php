@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
         $table->id('payment_id');
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->foreignId('ticket_id')->constrained('tickets', 'ticket_id')->onDelete('cascade');
+        $table->foreignId('flight_class_id')->constrained('flight_classes', 'flight_class_id')->onDelete('cascade');
         $table->foreignId('promo_id')->nullable()->constrained('promos', 'promo_id')->onDelete('set null');
         $table->integer('quantity')->default(1);
         $table->decimal('total_price', 15, 2);

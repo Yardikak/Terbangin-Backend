@@ -5,27 +5,36 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Ticket extends Model
 {
-    /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
     protected $primaryKey = 'ticket_id';
 
     protected $fillable = [
-        'flight_id', 'user_id','status', 'purchase_date', 'e_ticket',
+        'flight_class_id', 'flight_id', 'purchase_date', 'e_ticket',
     ];
+
+    public function flightClass(): BelongsTo
+    {
+        return $this->belongsTo(FlightClass::class, 'flight_class_id');
+    }
 
     public function flight(): BelongsTo
     {
         return $this->belongsTo(Flight::class, 'flight_id');
     }
 
-    public function payment(): HasOne
+    protected static function booted()
     {
-        return $this->hasOne(Payment::class);
+        static::created(function ($ticket) {
+            $ticket->flightClass->updateAvailableSeats();
+        });
+
+        static::deleted(function ($ticket) {
+            $ticket->flightClass->updateAvailableSeats();
+        });
     }
     public function user(): BelongsTo
     {

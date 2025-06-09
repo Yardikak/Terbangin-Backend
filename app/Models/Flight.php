@@ -15,10 +15,22 @@ class Flight extends Model
     protected $primaryKey = 'flight_id';
     
     protected $fillable = [
-        'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'from', 'price', 'status'
+        'airline_name',
+        'flight_number',
+        'departure',
+        'arrival',
+        'from',
+        'destination',
+        'status',
+        'total_seats'
     ];
     protected $table = 'flights';
 
+    public function flightClasses(): HasMany
+    {
+        return $this->hasMany(FlightClass::class, 'flight_id');
+    }
+    
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'flight_id');

@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table) {
-            $table->id('ticket_id');
-            $table->foreignId('flight_id')->constrained('flights', 'flight_id')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade'); // Reference 'id' instead of 'user_id'
-            $table->string('status');
-            $table->dateTime('purchase_date');
-            $table->string('e_ticket');
-            $table->timestamps();
+        $table->id('ticket_id');
+        $table->foreignId('flight_id')->constrained('flights', 'flight_id')->onDelete('cascade');
+        $table->foreignId('flight_class_id')->constrained('flight_classes', 'flight_class_id')->onDelete('cascade');
+        $table->dateTime('purchase_date');
+        $table->string('e_ticket', 255)->unique();
+        $table->timestamps();
         });
     }
 
