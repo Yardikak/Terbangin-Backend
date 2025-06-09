@@ -27,7 +27,6 @@ use App\Http\Controllers\Api\KNNController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -35,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     
-    Route::get('/flights/search', [FlightController::class, 'search']);
+    Route::post('/flights/search', [FlightController::class, 'search']);
     Route::apiResource('flights', FlightController::class);
 
     Route::apiResource('payments', PaymentController::class);
@@ -45,8 +44,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/finish', [PaymentController::class, 'paymentFinish']);
     Route::get('/payment/error', [PaymentController::class, 'paymentError']);
     Route::get('/payment/pending', [PaymentController::class, 'paymentPending']);
+    
+    Route::get('/tickets/user/{user_id}', [TicketController::class, 'getTicketsByUser']);
+    Route::apiResource('tickets', TicketController::class);
 });
+Route::post('/promos/search', [PromoController::class, 'search']);
 
 Route::apiResource('promos', PromoController::class);
-Route::apiResource('tickets', TicketController::class);
 Route::get('/knn/recommend', [KNNController::class, 'recommendLeastPopular']);

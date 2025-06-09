@@ -6,21 +6,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 
-
 class TicketController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $tickets = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->get();
+{
+    $tickets = Ticket::with('flight')->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $tickets
-        ]);
-    }
+    return response()->json([
+        'status' => 'success',
+        'data' => $tickets
+    ]);
+}
+
 
     /**
      * Store a newly created resource in storage.
@@ -29,6 +29,7 @@ class TicketController extends Controller
     {
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,flight_id',
+            'user_id' => 'required|exists:users,id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
             'e_ticket' => 'required|string|max:255',
@@ -42,6 +43,7 @@ class TicketController extends Controller
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -53,21 +55,22 @@ class TicketController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-                $ticket = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->find($id);
+{
+    $ticket = Ticket::with('flight')->find($id);
 
-        if (!$ticket) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Ticket not found'
-            ], 404);
-        }
-
+    if (!$ticket) {
         return response()->json([
-            'status' => 'success',
-            'data' => $ticket
-        ]);
+            'status' => 'error',
+            'message' => 'Ticket not found'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $ticket
+    ]);
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -85,6 +88,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
             'e_ticket' => 'sometimes|required|string|max:255',
@@ -98,6 +102,7 @@ class TicketController extends Controller
             'data' => [
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -126,4 +131,27 @@ class TicketController extends Controller
             'message' => 'Ticket deleted successfully'
         ]);
     }
+
+    /**
+     * Get tickets by user ID.
+     */
+    public function getTicketsByUser(string $user_id)
+{
+    $tickets = Ticket::with('flight')
+        ->where('user_id', $user_id)
+        ->get();
+
+    if ($tickets->isEmpty()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No tickets found for this user'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $tickets
+    ]);
+}
+
 }
