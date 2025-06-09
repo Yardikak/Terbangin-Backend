@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -46,5 +48,32 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    // Menampilkan form registrasi
+    public function showRegistrationForm()
+    {
+        return view('auth.register'); // Pastikan form registrasi ada di resources/views/auth/register.blade.php
+    }
+
+    // Memproses registrasi pengguna baru
+    public function register(Request $request)
+    {
+        // Validasi data registrasi
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|confirmed|min:8',
+        ]);
+
+        // Membuat pengguna baru
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // Enkripsi password
+        ]);
+
+        // Setelah registrasi berhasil, arahkan pengguna ke halaman login
+        return redirect()->route('login')->with('status', 'Registration successful! Please login.');
     }
 }

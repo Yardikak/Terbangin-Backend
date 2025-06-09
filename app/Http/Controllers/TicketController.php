@@ -2,73 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\Flight;
-use Illuminate\Http\Request;
+use App\Models\User;
 
 class TicketController extends Controller
 {
     /**
-     * Menampilkan daftar tiket.
+     * Display a listing of the resource.
      */
     public function index()
     {
-        $tickets = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->get();
+        $tickets = Ticket::with('flight')->get();
 
-        return view('tickets.index', ['tickets' => $tickets]);
+        return view('tickets.index', compact('tickets'));
     }
 
     /**
-     * Menampilkan form untuk membuat tiket baru.
+     * Show the form for creating a new resource.
      */
-   public function create()
+    public function create()
     {
-        // Fetch all available flights from the database
-        $flights = Flight::all();  // Assuming you have a model called Flight
-
-        // Pass the flights data to the view
-        return view('tickets.create', compact('flights'));
+        $flights = Flight::all();
+        $users = User::all();
+        
+        return view('tickets.create', compact('flights', 'users'));
     }
 
-
-
     /**
-     * Menyimpan tiket yang baru dibuat.
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // Validate the incoming request data
         $validated = $request->validate([
-            'flight_id' => 'required|exists:flights,id', // Ensure flight_id exists in the flights table
+            'flight_id' => 'required|exists:flights,flight_id',
+            'user_id' => 'required|exists:users,id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
             'e_ticket' => 'required|string|max:255',
         ]);
 
-        // Store the validated data in the database
-        Ticket::create($validated);
+        $ticket = Ticket::create($validated);
 
-        // Redirect back with success message
-        return redirect()->route('tickets.index')->with('status', 'Ticket created successfully!');
+        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully');
     }
 
-
     /**
-     * Menampilkan detail tiket tertentu.
+     * Display the specified resource.
      */
     public function show(string $id)
     {
-        $ticket = Ticket::select('ticket_id', 'flight_id', 'status', 'purchase_date', 'e_ticket')->find($id);
+        $ticket = Ticket::with('flight')->find($id);
 
         if (!$ticket) {
             return redirect()->route('tickets.index')->with('error', 'Ticket not found');
         }
 
-        return view('tickets.show', ['ticket' => $ticket]);
+        return view('tickets.show', compact('ticket'));
     }
 
     /**
-     * Menampilkan form untuk mengedit tiket yang ada.
+     * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
@@ -78,11 +73,14 @@ class TicketController extends Controller
             return redirect()->route('tickets.index')->with('error', 'Ticket not found');
         }
 
-        return view('tickets.edit', ['ticket' => $ticket]);
+        $flights = Flight::all();
+        $users = User::all();
+
+        return view('tickets.edit', compact('ticket', 'flights', 'users'));
     }
 
     /**
-     * Memperbarui tiket yang ada.
+     * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
@@ -94,6 +92,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
+            'user_id' => 'sometimes|required|exists:users,id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
             'e_ticket' => 'sometimes|required|string|max:255',
@@ -101,11 +100,11 @@ class TicketController extends Controller
 
         $ticket->update($validated);
 
-        return redirect()->route('tickets.index')->with('status', 'Ticket updated successfully');
+        return redirect()->route('tickets.index')->with('success', 'Ticket updated successfully');
     }
 
     /**
-     * Menghapus tiket yang ada.
+     * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
@@ -117,6 +116,22 @@ class TicketController extends Controller
 
         $ticket->delete();
 
-        return redirect()->route('tickets.index')->with('status', 'Ticket deleted successfully');
+        return redirect()->route('tickets.index')->with('success', 'Ticket deleted successfully');
+    }
+
+    /**
+     * Get tickets by user ID.
+     */
+    public function getTicketsByUser(string $user_id)
+    {
+        $tickets = Ticket::with('flight')
+            ->where('user_id', $user_id)
+            ->get();
+
+        if ($tickets->isEmpty()) {
+            return redirect()->route('tickets.index')->with('error', 'No tickets found for this user');
+        }
+
+        return view('tickets.index', compact('tickets'));
     }
 }

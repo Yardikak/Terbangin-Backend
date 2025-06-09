@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('destination');
             $table->string('status');
             $table->integer('total_seats')->default(10);
+            $table->decimal('price', 10, 2)->nullable()->change(); 
             $table->timestamps();
         });
     }

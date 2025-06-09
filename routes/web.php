@@ -5,8 +5,8 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TicketController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Route;
 
 // Rute untuk halaman depan
 Route::get('/', function () {
@@ -16,7 +16,7 @@ Route::get('/', function () {
 // Rute untuk dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 // Rute untuk menampilkan form login
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -27,6 +27,12 @@ Route::post('login', [AuthController::class, 'login'])->name('login.submit');
 // Rute untuk logout
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+// Rute untuk menampilkan form registrasi
+Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
+
+// Rute untuk memproses registrasi
+Route::post('register', [AuthController::class, 'register'])->name('register.submit');
+
 // Rute untuk profile
 Route::view('profile', 'profile')->middleware('auth')->name('profile');
 
@@ -36,10 +42,6 @@ Route::resource('flights', FlightController::class)
     ->names([
         'index' => 'flights.index',
         'create' => 'flights.create',
-        'store' => 'flights.store',
-        'show' => 'flights.show',
-        'edit' => 'flights.edit',
-        'update' => 'flights.update',
         'destroy' => 'flights.destroy',
     ]);
 
@@ -49,10 +51,6 @@ Route::resource('history', HistoryController::class)
     ->names([
         'index' => 'history.index',
         'create' => 'history.create',
-        'store' => 'history.store',
-        'show' => 'history.show',
-        'edit' => 'history.edit',
-        'update' => 'history.update',
         'destroy' => 'history.destroy',
     ]);
 
@@ -62,10 +60,6 @@ Route::resource('payments', PaymentController::class)
     ->names([
         'index' => 'payments.index',
         'create' => 'payments.create',
-        'store' => 'payments.store',
-        'show' => 'payments.show',
-        'edit' => 'payments.edit',
-        'update' => 'payments.update',
         'destroy' => 'payments.destroy',
     ]);
 
@@ -75,10 +69,6 @@ Route::resource('promo', PromoController::class)
     ->names([
         'index' => 'promo.index',
         'create' => 'promo.create',
-        'store' => 'promo.store',
-        'show' => 'promo.show',
-        'edit' => 'promo.edit',
-        'update' => 'promo.update',
         'destroy' => 'promo.destroy',
     ]);
 
@@ -88,9 +78,6 @@ Route::resource('tickets', TicketController::class)
     ->names([
         'index' => 'tickets.index',
         'create' => 'tickets.create',
-        'store' => 'tickets.store',
-        'show' => 'tickets.show',
-        'edit' => 'tickets.edit',
         'update' => 'tickets.update',
         'destroy' => 'tickets.destroy',
     ]);

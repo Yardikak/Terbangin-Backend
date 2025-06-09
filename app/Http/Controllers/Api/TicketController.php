@@ -12,8 +12,8 @@ class TicketController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $tickets = Ticket::select('ticket_id', 'flight_id', 'purchase_date', 'e_ticket')->get();
+{
+    $tickets = Ticket::with('flight')->get();
 
     return response()->json([
         'status' => 'success',
@@ -29,20 +29,25 @@ class TicketController extends Controller
     {
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,flight_id',
-            'flight_class_id' => 'required|exists:flight_classes,flight_class_id',
-            'purchase_date' => 'required|date_format:Y-m-d H:i:s',
+            'user_id' => 'required|exists:users,id',
+            'status' => 'required|string|max:255',
+            'purchase_date' => 'required|date',
+            'e_ticket' => 'required|string|max:255',
         ]);
-        do {
-            $eTicket = 'ETK-' . now()->timestamp . '-' . rand(1000, 9999);
-        } while (Ticket::where('e_ticket', $eTicket)->exists());
 
-        $validated['e_ticket'] = $eTicket;
         $ticket = Ticket::create($validated);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Ticket created successfully',
-            'data' => $ticket
+            'data' => [
+                'ticket_id' => $ticket->ticket_id,
+                'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
+                'status' => $ticket->status,
+                'purchase_date' => $ticket->purchase_date,
+                'e_ticket' => $ticket->e_ticket,
+            ]
         ], 201);
     }
 
@@ -50,8 +55,8 @@ class TicketController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        $ticket = Ticket::select('ticket_id', 'flight_id', 'purchase_date', 'e_ticket')->find($id);
+{
+    $ticket = Ticket::with('flight')->find($id);
 
     if (!$ticket) {
         return response()->json([
@@ -83,23 +88,25 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
-            'flight_class_id' => 'sometimes|required|exists:flight_classes,flight_class_id',
-            'purchase_date' => 'required|date_format:Y-m-d H:i:s',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'status' => 'sometimes|required|string|max:255',
+            'purchase_date' => 'sometimes|required|date',
+            'e_ticket' => 'sometimes|required|string|max:255',
         ]);
-
-        if ($request->regenerate_e_ticket) {
-            do {
-                $eTicket = 'ETK-' . now()->timestamp . '-' . rand(1000, 9999);
-            } while (Ticket::where('e_ticket', $eTicket)->exists());
-                $validated['e_ticket'] = $eTicket;
-        }
 
         $ticket->update($validated);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Ticket updated successfully',
-            'data' => $ticket
+            'data' => [
+                'ticket_id' => $ticket->ticket_id,
+                'flight_id' => $ticket->flight_id,
+                'user_id' => $ticket->user_id,
+                'status' => $ticket->status,
+                'purchase_date' => $ticket->purchase_date,
+                'e_ticket' => $ticket->e_ticket,
+            ]
         ]);
     }
 
