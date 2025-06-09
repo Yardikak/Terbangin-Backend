@@ -49,7 +49,7 @@
                 <select name="passenger_id" id="passenger_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                     <option value="" disabled selected>Select a Passenger</option>
                     @foreach ($passengers as $passenger)
-                        <option value="{{ $passenger->id }}" {{ old('passenger_id') == $passenger->id ? 'selected' : '' }}>
+                        <option value="{{ $passenger->passenger_id }}" {{ old('passenger_id') == $passenger->passenger_id ? 'selected' : '' }}>
                             {{ $passenger->name }}
                         </option>
                     @endforeach
@@ -60,10 +60,9 @@
             <div class="mb-4">
                 <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                 <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                    <option value="scheduled" {{ old('status') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                    <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="canceled" {{ old('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
-                    <option value="delayed" {{ old('status') == 'delayed' ? 'selected' : '' }}>Delayed</option>
+                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="confirmed" {{ old('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                    <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                 </select>
             </div>
 
