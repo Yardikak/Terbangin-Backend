@@ -17,6 +17,7 @@ class Flight extends Model
     protected $fillable = [
         'airline_name', 'flight_number', 'departure', 'arrival', 'destination', 'from', 'price', 'status'
     ];
+    protected $table = 'flights';
 
     public function tickets(): HasMany
     {
