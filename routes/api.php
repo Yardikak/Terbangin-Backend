@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
     
     Route::post('/flights/search', [FlightController::class, 'search']);
+    Route::apiResource('passengers', PassengerController::class);
     Route::apiResource('flights', FlightController::class);
 
     Route::apiResource('payments', PaymentController::class);
