@@ -19,7 +19,8 @@ class TicketFactory extends Factory
         return [
             'flight_id' => \App\Models\Flight::factory(),
             'user_id' => \App\Models\User::factory(),
-            'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled']),
+            'passenger_id' => \App\Models\Passenger::factory(),
+            'status' => $this->faker->randomElement(['active', 'confirmed', 'cancelled']),
             'purchase_date' => $this->faker->dateTimeBetween('-1 week', 'now'),
             'e_ticket' => 'ETK'.$this->faker->unique()->numberBetween(100000, 999999),
         ];

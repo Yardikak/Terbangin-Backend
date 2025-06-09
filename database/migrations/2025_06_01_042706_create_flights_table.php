@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('flights', function (Blueprint $table) {
-        $table->id('flight_id');
-        $table->string('airline_name');
-        $table->string('flight_number');
-        $table->dateTime('departure');
-        $table->dateTime('arrival');
-        $table->string('from');
-        $table->string('destination');
-        $table->decimal('price', 10, 2);
-        $table->string('status');
-        $table->timestamps();
+            $table->id('flight_id');
+            $table->string('airline_name');
+            $table->string('flight_number');
+            $table->dateTime('departure');
+            $table->dateTime('arrival');
+            $table->string('from');
+            $table->string('destination');
+            $table->decimal('price', 10, 2);
+            $table->string('status');
+            $table->timestamps();
         });
     }
 
@@ -30,6 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('tickets'); // Drop tickets table first to remove foreign key constraint
         Schema::dropIfExists('flights');
     }
 };

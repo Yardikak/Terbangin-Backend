@@ -12,15 +12,14 @@ class TicketController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $tickets = Ticket::with('flight')->get();
+    {
+        $tickets = Ticket::with(['flight', 'passenger'])->get();
 
-    return response()->json([
-        'status' => 'success',
-        'data' => $tickets
-    ]);
-}
-
+        return response()->json([
+            'status' => 'success',
+            'data' => $tickets
+        ]);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -30,6 +29,7 @@ class TicketController extends Controller
         $validated = $request->validate([
             'flight_id' => 'required|exists:flights,flight_id',
             'user_id' => 'required|exists:users,id',
+            'passenger_id' => 'required|exists:passengers,passenger_id',
             'status' => 'required|string|max:255',
             'purchase_date' => 'required|date',
             'e_ticket' => 'required|string|max:255',
@@ -44,6 +44,7 @@ class TicketController extends Controller
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
                 'user_id' => $ticket->user_id,
+                'passenger_id' => $ticket->passenger_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -55,22 +56,21 @@ class TicketController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-{
-    $ticket = Ticket::with('flight')->find($id);
+    {
+        $ticket = Ticket::with(['flight', 'passenger'])->find($id);
 
-    if (!$ticket) {
+        if (!$ticket) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ticket not found'
+            ], 404);
+        }
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'Ticket not found'
-        ], 404);
+            'status' => 'success',
+            'data' => $ticket
+        ]);
     }
-
-    return response()->json([
-        'status' => 'success',
-        'data' => $ticket
-    ]);
-}
-
 
     /**
      * Update the specified resource in storage.
@@ -89,6 +89,7 @@ class TicketController extends Controller
         $validated = $request->validate([
             'flight_id' => 'sometimes|required|exists:flights,flight_id',
             'user_id' => 'sometimes|required|exists:users,id',
+            'passenger_id' => 'sometimes|required|exists:passengers,passenger_id',
             'status' => 'sometimes|required|string|max:255',
             'purchase_date' => 'sometimes|required|date',
             'e_ticket' => 'sometimes|required|string|max:255',
@@ -103,6 +104,7 @@ class TicketController extends Controller
                 'ticket_id' => $ticket->ticket_id,
                 'flight_id' => $ticket->flight_id,
                 'user_id' => $ticket->user_id,
+                'passenger_id' => $ticket->passenger_id,
                 'status' => $ticket->status,
                 'purchase_date' => $ticket->purchase_date,
                 'e_ticket' => $ticket->e_ticket,
@@ -136,22 +138,21 @@ class TicketController extends Controller
      * Get tickets by user ID.
      */
     public function getTicketsByUser(string $user_id)
-{
-    $tickets = Ticket::with('flight')
-        ->where('user_id', $user_id)
-        ->get();
+    {
+        $tickets = Ticket::with(['flight', 'passenger'])
+            ->where('user_id', $user_id)
+            ->get();
 
-    if ($tickets->isEmpty()) {
+        if ($tickets->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tickets found for this user'
+            ], 404);
+        }
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'No tickets found for this user'
-        ], 404);
+            'status' => 'success',
+            'data' => $tickets
+        ]);
     }
-
-    return response()->json([
-        'status' => 'success',
-        'data' => $tickets
-    ]);
-}
-
 }

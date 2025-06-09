@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::create('tickets', function (Blueprint $table) {
             $table->id('ticket_id');
             $table->foreignId('flight_id')->constrained('flights', 'flight_id')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade'); // Reference 'id' instead of 'user_id'
+            $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignId('passenger_id')->constrained('passengers', 'passenger_id')->onDelete('cascade');
             $table->string('status');
             $table->dateTime('purchase_date');
             $table->string('e_ticket');
             $table->timestamps();
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

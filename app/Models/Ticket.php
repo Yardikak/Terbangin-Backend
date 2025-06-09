@@ -15,8 +15,12 @@ class Ticket extends Model
     protected $primaryKey = 'ticket_id';
 
     protected $fillable = [
-        'flight_id', 'user_id','status', 'purchase_date', 'e_ticket',
+        'flight_id', 'user_id','passenger_id','status', 'purchase_date', 'e_ticket',
     ];
+    public function passenger(): BelongsTo
+    {
+        return $this->belongsTo(Passenger::class, 'passenger_id');
+    }
 
     public function flight(): BelongsTo
     {
