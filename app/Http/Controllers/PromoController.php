@@ -3,64 +3,130 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo;
-use App\Http\Requests\StorePromoRequest;
-use App\Http\Requests\UpdatePromoRequest;
+use Illuminate\Http\Request;
 
 class PromoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar promo.
      */
     public function index()
     {
-        //
+        // Mengambil data promo dengan kolom tertentu
+        $promos = Promo::select('promo_id', 'promo_code', 'description', 'discount', 'valid_until')->get();
+
+        // Mengembalikan view dengan data promo
+        return view('promo.index', ['promo' => $promos]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat promo baru.
      */
     public function create()
     {
-        //
+        // Menampilkan form untuk membuat promo
+        return view('promo.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan promo yang baru dibuat.
      */
-    public function store(StorePromoRequest $request)
+    public function store(Request $request)
     {
-        //
+        // Validasi inputan
+        $validated = $request->validate([
+            'promo_code' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'discount' => 'required|numeric|min:0',
+            'valid_until' => 'required|date',
+        ]);
+
+        // Menyimpan data promo
+        $promo = Promo::create($validated);
+
+        // Redirect ke halaman index dengan status success
+        return redirect()->route('promo.index')->with('status', 'Promo created successfully');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail promo tertentu.
      */
-    public function show(Promo $promo)
+    public function show(string $id)
     {
-        //
+        // Mengambil promo berdasarkan ID
+        $promo = Promo::select('promo_id', 'promo_code', 'description', 'discount', 'valid_until')->find($id);
+
+        // Jika promo tidak ditemukan, redirect ke halaman index dengan pesan error
+        if (!$promo) {
+            return redirect()->route('promo.index')->with('error', 'Promo not found');
+        }
+
+        // Menampilkan detail promo
+        return view('promo.show', ['promo' => $promo]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit promo yang ada.
      */
-    public function edit(Promo $promo)
+    public function edit(string $id)
     {
-        //
+        // Mengambil promo berdasarkan ID
+        $promo = Promo::find($id);
+
+        // Jika promo tidak ditemukan, redirect ke halaman index dengan pesan error
+        if (!$promo) {
+            return redirect()->route('promo.index')->with('error', 'Promo not found');
+        }
+
+        // Menampilkan form edit promo
+        return view('promo.edit', ['promo' => $promo]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui promo yang ada.
      */
-    public function update(UpdatePromoRequest $request, Promo $promo)
+    public function update(Request $request, string $id)
     {
-        //
+        // Mengambil promo berdasarkan ID
+        $promo = Promo::find($id);
+
+        // Jika promo tidak ditemukan, redirect ke halaman index dengan pesan error
+        if (!$promo) {
+            return redirect()->route('promo.index')->with('error', 'Promo not found');
+        }
+
+        // Validasi inputan untuk update
+        $validated = $request->validate([
+            'promo_code' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'discount' => 'sometimes|required|numeric|min:0',
+            'valid_until' => 'sometimes|required|date',
+        ]);
+
+        // Mengupdate data promo
+        $promo->update($validated);
+
+        // Redirect ke halaman index dengan status success
+        return redirect()->route('promo.index')->with('status', 'Promo updated successfully');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus promo yang ada.
      */
-    public function destroy(Promo $promo)
+    public function destroy(string $id)
     {
-        //
+        // Mengambil promo berdasarkan ID
+        $promo = Promo::find($id);
+
+        // Jika promo tidak ditemukan, redirect ke halaman index dengan pesan error
+        if (!$promo) {
+            return redirect()->route('promo.index')->with('error', 'Promo not found');
+        }
+
+        // Menghapus promo
+        $promo->delete();
+
+        // Redirect ke halaman index dengan status success
+        return redirect()->route('promo.index')->with('status', 'Promo deleted successfully');
     }
 }
