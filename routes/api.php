@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment/pending', [PaymentController::class, 'paymentPending']);
     
     Route::get('/tickets/user/{user_id}', [TicketController::class, 'getTicketsByUser']);
+    Route::apiResource('tickets', TicketController::class);
 });
 Route::post('/promos/search', [PromoController::class, 'search']);
 
