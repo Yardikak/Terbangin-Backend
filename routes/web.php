@@ -5,27 +5,34 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\TicketController;
-
 use Illuminate\Support\Facades\Route;
-// D:\kuliaho\ABP\Terbangin-Backend\resources\views\welcome\navigation.blade.php
-// D:\kuliaho\ABP\Terbangin-Backend\routes\web.php
-// D:\kuliaho\ABP\Terbangin-Backend\resources\views\dashboard.blade.php
+use App\Http\Controllers\AuthController;
+
+// Rute untuk halaman depan
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Rute untuk dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-// Route::view('dashboard', 'dashboard')
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+// Rute untuk menampilkan form login
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 
+// Rute untuk memproses login
+Route::post('login', [AuthController::class, 'login'])->name('login.submit');
+
+// Rute untuk logout
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+// Rute untuk profile
+Route::view('profile', 'profile')->middleware('auth')->name('profile');
+
+// Rute Resource untuk Flight
 Route::resource('flights', FlightController::class)
-    ->middleware(['auth'])  // Tambahkan middleware jika diperlukan
+    ->middleware('auth')  // Tambahkan middleware hanya sekali
     ->names([
         'index' => 'flights.index',
         'create' => 'flights.create',
@@ -36,8 +43,9 @@ Route::resource('flights', FlightController::class)
         'destroy' => 'flights.destroy',
     ]);
 
+// Rute Resource untuk History
 Route::resource('history', HistoryController::class)
-    ->middleware(['auth'])  // Tambahkan middleware jika diperlukan
+    ->middleware('auth')
     ->names([
         'index' => 'history.index',
         'create' => 'history.create',
@@ -48,8 +56,9 @@ Route::resource('history', HistoryController::class)
         'destroy' => 'history.destroy',
     ]);
 
+// Rute Resource untuk Payments
 Route::resource('payments', PaymentController::class)
-    ->middleware(['auth'])  // Tambahkan middleware jika diperlukan
+    ->middleware('auth')
     ->names([
         'index' => 'payments.index',
         'create' => 'payments.create',
@@ -60,8 +69,9 @@ Route::resource('payments', PaymentController::class)
         'destroy' => 'payments.destroy',
     ]);
 
+// Rute Resource untuk Promo
 Route::resource('promo', PromoController::class)
-    ->middleware(['auth'])  // Tambahkan middleware jika diperlukan
+    ->middleware('auth')
     ->names([
         'index' => 'promo.index',
         'create' => 'promo.create',
@@ -72,8 +82,9 @@ Route::resource('promo', PromoController::class)
         'destroy' => 'promo.destroy',
     ]);
 
+// Rute Resource untuk Tickets
 Route::resource('tickets', TicketController::class)
-    ->middleware(['auth'])  // Tambahkan middleware jika diperlukan
+    ->middleware('auth')
     ->names([
         'index' => 'tickets.index',
         'create' => 'tickets.create',
@@ -83,15 +94,9 @@ Route::resource('tickets', TicketController::class)
         'update' => 'tickets.update',
         'destroy' => 'tickets.destroy',
     ]);
+
+// Menambahkan rute khusus untuk update pada tickets jika diperlukan
 Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
 
-// // Rute untuk History
-// Route::resource('history', HistoryController::class)->names([
-//     'index' => 'history.index',  // Menyebutkan nama rute 'history.index'
-// ]);
-// // Rute untuk History
-// Route::resource('promo', PromoController::class)->names([
-//     'index' => 'promo.index',  // Menyebutkan nama rute 'history.index'
-// ]);
-
+// Memuat file auth.php untuk rute otentikasi
 require __DIR__ . '/auth.php';
