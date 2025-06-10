@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="container mt-10">
+    <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
         <h1 class="text-2xl font-bold mb-6">Payment List</h1>
         <a href="{{ route('payments.create') }}" class="btn btn-primary mb-4">Add Payment</a>
 
-        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+        <div class="overflow-x-auto">
             <table class="table table-bordered">
                 <thead class="bg-gray-100 text-left text-gray-600 font-semibold">
                     <tr>

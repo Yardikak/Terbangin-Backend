@@ -6,31 +6,41 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <img src="{{ asset('airplane-air-plane-fly-svgrepo-com.png') }}" class="block h-9 w-auto" alt="Logo Pesawat" />
+                        <img src="{{ asset('default-airline.png') }}" class="block h-9 mr-2 w-auto" alt="Logo Pesawat" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="flex space-x-0">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('dashboard') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('dashboard') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('flights.index')" :active="request()->routeIs('flights.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('flights.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('flights.index')" :active="request()->routeIs('flights.*')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('flights.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('Flights') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('history.index')" :active="request()->routeIs('history.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('history.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('history.index')" :active="request()->routeIs('history.*')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('history.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('History') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('payments.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('payments.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('Payments') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('promo.index')" :active="request()->routeIs('promo.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('promo.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('promo.index')" :active="request()->routeIs('promo.*')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('promo.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('Promo') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('tickets.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
+                    <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')" class="text-white hover:bg-yellow-300 {{ request()->routeIs('tickets.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                         {{ __('Tickets') }}
                     </x-nav-link>
                 </div>
+            </div>
+
+            <!-- Logout Button (Desktop) -->
+            <div class="hidden sm:flex sm:items-center">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="text-white hover:bg-yellow-300 px-4 py-2 rounded-md">
+                        {{ __('Logout') }}
+                    </button>
+                </form>
             </div>
 
             <!-- Hamburger -->
@@ -51,26 +61,30 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('dashboard') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('flights.index')" :active="request()->routeIs('flights.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('flights.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('Flights') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('history.index')" :active="request()->routeIs('history.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('history.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('History') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('payments.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('Payments') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('promo.index')" :active="request()->routeIs('promo.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('promo.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('Promo') }}
             </x-responsive-nav-link>
-
             <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')" class="text-black hover:bg-yellow-300 {{ request()->routeIs('tickets.*') ? 'bg-yellow-500' : '' }} px-4 py-2">
                 {{ __('Tickets') }}
             </x-responsive-nav-link>
+            <!-- Logout Button (Mobile) -->
+            <div class="px-4 py-2">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left text-black hover:bg-yellow-300 px-4 py-2 rounded-md">
+                        {{ __('Logout') }}
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>

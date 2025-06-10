@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/flights/search', [FlightController::class, 'search']);
     Route::apiResource('payments', PaymentController::class);
     Route::apiResource('histories', HistoryController::class);
+    Route::apiResource('passengers', PassengerController::class);
+
     
     Route::post('/payments/notification', [PaymentController::class, 'handleNotification']);
     Route::get('/payment/finish', [PaymentController::class, 'paymentFinish']);

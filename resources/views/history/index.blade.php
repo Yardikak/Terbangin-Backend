@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mt-10">
+    <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
         <h1 class="text-2xl font-bold mb-6">History List</h1>
         <a href="{{ route('history.create') }}" class="btn btn-primary mb-4">Add History</a>
 

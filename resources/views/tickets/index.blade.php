@@ -8,7 +8,7 @@
             </div>
         @endif
 
-        <a href="{{ route('tickets.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 mb-4 inline-block">Add Ticket</a>
+        <a href="{{ route('tickets.create') }}" class="btn btn-primary mb-4">Add Ticket</a>
 
         <table class="min-w-full bg-white border border-gray-200 table-auto">
             <thead class="bg-gray-100">
